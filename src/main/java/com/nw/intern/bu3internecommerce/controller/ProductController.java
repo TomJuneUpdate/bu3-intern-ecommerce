@@ -2,6 +2,7 @@ package com.nw.intern.bu3internecommerce.controller;
 
 import com.nw.intern.bu3internecommerce.dto.request.ProductRequest;
 import com.nw.intern.bu3internecommerce.service.ProductService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,13 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/products")
+@AllArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
     @GetMapping
     public ResponseEntity<?> getAllProducts() {
         try {

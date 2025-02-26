@@ -1,12 +1,10 @@
 package com.nw.intern.bu3internecommerce.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Builder
 public class ProductRequest {
     private String name;
     private double price;
