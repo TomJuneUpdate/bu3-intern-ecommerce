@@ -20,4 +20,4 @@ ${AnsiColor.BRIGHT_BLUE}██████████████████�
 ${AnsiColor.BRIGHT_BLUE}████████████████████████${AnsiColor.BLACK}██████${AnsiColor.BRIGHT_BLUE}████${AnsiColor.BLACK}██████${AnsiColor.BRIGHT_BLUE}████████████${AnsiColor.BLACK}██████${AnsiColor.BRIGHT_BLUE}████${AnsiColor.BLACK}██████${AnsiColor.BRIGHT_BLUE}████████████
 ████████████████████████████████████████████████████████████████████████████████
 ${AnsiColor.BRIGHT_BLUE}:: Meo Meo Nyan Cat :: Running Spring Boot ${spring-boot.version} :: \ö/${AnsiColor.BLACK}
-${AnsiColor.BRIGHT_GREEN}:: Developed by YOUR_NAME :: TOMJUNEUPDATE 🚀
+${AnsiColor.BRIGHT_GREEN}:: Developed by TOMJUNEUPDATE 🚀
