@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.entity;
+package com.nw.intern.bu3internecommerce.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

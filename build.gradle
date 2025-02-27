@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.2'
+    id 'org.springframework.boot' version '3.3.5' // Sử dụng phiên bản ổn định
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -24,16 +24,32 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Core
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc' // JDBC Support
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Springdoc OpenAPI (Swagger)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    // MySQL Driver
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
+    // Lombok (Giảm boilerplate code)
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Annotation Processor cho Spring Boot Configuration
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // DevTools (Reload tự động)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA
-    implementation 'mysql:mysql-connector-java:8.0.33' // MySQL Driver
-    implementation 'org.springframework.boot:spring-boot-starter-validation' // Validation
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 tasks.named('test') {

@@ -1,7 +1,7 @@
 package com.nw.intern.bu3internecommerce.service;
 
-import com.nw.intern.bu3internecommerce.dto.request.ProductRequest;
-import com.nw.intern.bu3internecommerce.entity.Product;
+import com.nw.intern.bu3internecommerce.model.dto.request.ProductRequest;
+import com.nw.intern.bu3internecommerce.model.entity.Product;
 import com.nw.intern.bu3internecommerce.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

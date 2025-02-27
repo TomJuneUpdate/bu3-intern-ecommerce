@@ -1,6 +1,6 @@
 package com.nw.intern.bu3internecommerce.repository;
 
-import com.nw.intern.bu3internecommerce.entity.Product;
+import com.nw.intern.bu3internecommerce.model.entity.Product;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 

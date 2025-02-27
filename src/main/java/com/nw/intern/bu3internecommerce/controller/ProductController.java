@@ -1,6 +1,6 @@
 package com.nw.intern.bu3internecommerce.controller;
 
-import com.nw.intern.bu3internecommerce.dto.request.ProductRequest;
+import com.nw.intern.bu3internecommerce.model.dto.request.ProductRequest;
 import com.nw.intern.bu3internecommerce.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

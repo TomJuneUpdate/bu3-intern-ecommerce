@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.dto.request;
+package com.nw.intern.bu3internecommerce.model.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
