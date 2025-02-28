@@ -21,22 +21,22 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class BaseEntity implements Serializable {
     @CreatedBy
-    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
+//    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
     @JsonIgnore
     private String createdBy;
 
     @CreatedDate
-    @Column(name = "created_date", updatable = false)
+//    @Column(name = "created_date", updatable = false)
     @JsonIgnore
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @LastModifiedBy
-    @Column(name = "updated_by", length = 50)
+//    @Column(name = "updated_by", length = 50)
     @JsonIgnore
     private String updatedBy;
 
     @LastModifiedDate
-    @Column(name = "updated_date")
+//    @Column(name = "updated_date")
     @JsonIgnore
     private LocalDateTime updatedDate = LocalDateTime.now();
 }

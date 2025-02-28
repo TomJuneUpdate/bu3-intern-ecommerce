@@ -23,54 +23,30 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> getAllProducts() {
-        try {
-            return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        return ResponseEntity.ok("");
     }
 
     // Thêm sản phẩm mới
     @PostMapping
     public ResponseEntity<?> addProduct(@RequestBody ProductRequest productDTO) {
-        try {
-            productService.addProduct(productDTO);
-            return ResponseEntity.ok("Product added successfully");
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity.ok("");
     }
 
     // Sửa sản phẩm
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable long id, @RequestBody ProductRequest productDTO) {
-        try {
-            productService.updateProduct(id, productDTO);
-            return ResponseEntity.ok("Product updated successfully");
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity.ok("");
     }
 
     // Xóa sản phẩm theo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removeProduct(@PathVariable long id) {
-        try {
-            productService.removeProduct(id);
-            return ResponseEntity.ok("Product removed successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        return ResponseEntity.ok("");
     }
 
     // Tìm sản phẩm theo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> findProduct(@PathVariable long id) {
-        try {
-            productService.findById(id);
-            return ResponseEntity.ok("Product found successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        return ResponseEntity.ok("");
     }
 }
