@@ -1,9 +1,8 @@
 package com.nw.intern.bu3internecommerce.controller;
 
-import com.nw.intern.bu3internecommerce.model.dto.request.ProductRequest;
+import com.nw.intern.bu3internecommerce.dto.ProductDto;
 import com.nw.intern.bu3internecommerce.service.ProductService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +27,13 @@ public class ProductController {
 
     // Thêm sản phẩm mới
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody ProductRequest productDTO) {
+    public ResponseEntity<?> addProduct(@RequestBody ProductDto productDTO) {
         return ResponseEntity.ok("");
     }
 
     // Sửa sản phẩm
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable long id, @RequestBody ProductRequest productDTO) {
+    public ResponseEntity<?> updateProduct(@PathVariable long id, @RequestBody ProductDto productDTO) {
         return ResponseEntity.ok("");
     }
 

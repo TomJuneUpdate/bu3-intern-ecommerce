@@ -1,5 +1,6 @@
-package com.nw.intern.bu3internecommerce.model.entity;
+package com.nw.intern.bu3internecommerce.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,5 +22,10 @@ public class Product extends BaseEntity  {
     private String name;
     private Double price;
     private String category;
+
+    @Column(nullable = false)
     private Integer stock;
+
+    @Column(length = 1000)
+    private String description;
 }

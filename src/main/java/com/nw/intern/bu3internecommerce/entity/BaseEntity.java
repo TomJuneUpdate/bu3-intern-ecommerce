@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.model.entity;
+package com.nw.intern.bu3internecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
@@ -26,12 +26,12 @@ public abstract class BaseEntity implements Serializable {
     private String createdBy;
 
     @CreatedDate
-//    @Column(name = "created_date", updatable = false)
+    @Column(updatable = false)
     @JsonIgnore
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @LastModifiedBy
-//    @Column(name = "updated_by", length = 50)
+    @Column(length = 50)
     @JsonIgnore
     private String updatedBy;
 

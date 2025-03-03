@@ -1,4 +1,4 @@
 package com.nw.intern.bu3internecommerce.service;
 
-public interface ProductService {
+public interface UserService {
 }
