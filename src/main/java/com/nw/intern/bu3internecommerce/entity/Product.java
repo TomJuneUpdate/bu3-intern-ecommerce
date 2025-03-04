@@ -28,4 +28,6 @@ public class Product extends BaseEntity  {
 
     @Column(length = 1000)
     private String description;
+
+    private String imageUrl;
 }

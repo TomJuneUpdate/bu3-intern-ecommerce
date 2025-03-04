@@ -14,4 +14,8 @@ public class Address extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String province;
+    private String district;
+    private String ward;
+    private String addressNote;
 }
