@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.config;
+package com.nw.intern.bu3internecommerce.config.locale;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.config;
+package com.nw.intern.bu3internecommerce.config.locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;

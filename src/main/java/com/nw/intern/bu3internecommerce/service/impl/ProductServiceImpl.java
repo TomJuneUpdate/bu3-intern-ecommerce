@@ -1,6 +1,6 @@
 package com.nw.intern.bu3internecommerce.service.impl;
 
-import com.nw.intern.bu3internecommerce.config.Translator;
+import com.nw.intern.bu3internecommerce.config.locale.Translator;
 import com.nw.intern.bu3internecommerce.dto.ProductDto;
 import com.nw.intern.bu3internecommerce.entity.Product;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
