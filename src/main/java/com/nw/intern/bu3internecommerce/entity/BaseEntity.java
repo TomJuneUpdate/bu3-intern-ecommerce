@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class BaseEntity implements Serializable {
     @CreatedBy
-//    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
+    @Column(nullable = false, length = 50, updatable = false)
     @JsonIgnore
     private String createdBy;
 
@@ -36,7 +36,6 @@ public abstract class BaseEntity implements Serializable {
     private String updatedBy;
 
     @LastModifiedDate
-//    @Column(name = "updated_date")
     @JsonIgnore
     private LocalDateTime updatedDate = LocalDateTime.now();
 }
