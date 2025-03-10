@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByName(String name);
 
-    @Query("SELECT MAX(Category.code) FROM Category")
+    @Query(value = "SELECT MAX(c.code) FROM categorys c", nativeQuery = true)
     String findMaxCategoryCode();
 
     boolean existsByName(String name);

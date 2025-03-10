@@ -68,9 +68,10 @@ public class ProductServiceImpl implements ProductService {
     public ApiResponse<ProductDto> updateProduct(Long id, ProductDto productDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
         Category category = existingProduct.getCategory();
-        if (!existingProduct.getCategory().getName().equals(productDto.getCategory().getName())) {
+        boolean isCategoryChanged = !category.getName().equals(productDto.getCategory().getName());
+
+        if (isCategoryChanged) {
             category = categoryRepository.findByName(productDto.getCategory().getName())
                     .orElseGet(() -> {
                         Category newCategory = new Category();
@@ -78,8 +79,8 @@ public class ProductServiceImpl implements ProductService {
                         newCategory.setCode(generateCategoryCode());
                         return categoryRepository.save(newCategory);
                     });
+            existingProduct.setCode(generateProductCode(category));
         }
-
         existingProduct.setName(productDto.getName());
         existingProduct.setMrpPrice(productDto.getMrpPrice());
         existingProduct.setSellingPrice(productDto.getSellingPrice());
@@ -90,11 +91,10 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setImageUrls(productDto.getImageUrls());
         existingProduct.setSizes(productDto.getSizes());
         existingProduct.setCategory(category);
-
         Product updatedProduct = productRepository.save(existingProduct);
-
         return ApiResponse.ok(convertToDto(updatedProduct));
     }
+
 
 
     @Override
