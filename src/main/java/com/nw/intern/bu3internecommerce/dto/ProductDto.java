@@ -1,16 +1,31 @@
 package com.nw.intern.bu3internecommerce.dto;
 
-import jakarta.persistence.Column;
+import com.nw.intern.bu3internecommerce.entity.Category;
+import com.nw.intern.bu3internecommerce.entity.Review;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
 public class ProductDto {
+    private String code;
     private String name;
-    private Double price;
-    private String category;
-    private Integer stock;
+    private Integer quantity;
+    private Double mrpPrice;
+    private Double sellingPrice;
+    private int discountPercentage;
+    private Category category;
     private String description;
-    private String imageUrl;
+    private Set<String> color;
+    private List<String> imageUrls = new ArrayList<String>();
+    private Set<String> sizes;
+    private List<Review> reviews = new ArrayList<>();
 }

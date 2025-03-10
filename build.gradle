@@ -37,6 +37,12 @@ dependencies {
     // MySQL Driver
     implementation 'mysql:mysql-connector-java:8.0.33'
 
+    // Security
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    testImplementation 'org.springframework.security:spring-security-test'
+//    testImplementation 'org.springframework.security:spring-security-test'
+
     // Lombok (Giảm boilerplate code)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

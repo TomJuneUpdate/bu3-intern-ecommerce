@@ -1,10 +1,11 @@
 package com.nw.intern.bu3internecommerce.controller;
 
 import com.nw.intern.bu3internecommerce.dto.ProductDto;
+import com.nw.intern.bu3internecommerce.dto.request.AddProductRequest;
+import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import com.nw.intern.bu3internecommerce.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("api/products")
 @AllArgsConstructor
 public class ProductController {
 
@@ -33,22 +34,22 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDTO) {
-        return ResponseEntity.ok(productService.createProduct(productDTO));
+    public ApiResponse<ProductDto> createProduct(@RequestBody AddProductRequest addProductRequest) {
+        return productService.createProduct(addProductRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable long id, @RequestBody ProductDto productDTO) {
-        return ResponseEntity.ok(productService.updateProduct(id, productDTO));
+    public ApiResponse<ProductDto> updateProduct(@PathVariable long id, @RequestBody ProductDto productDTO) {
+        return productService.updateProduct(id, productDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable long id) {
-        return ResponseEntity.noContent().build();
+    public ApiResponse<Void> deleteProduct(@PathVariable long id) {
+        return productService.deleteProduct(id);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findProduct(@PathVariable long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    public ApiResponse<ProductDto> findProduct(@PathVariable long id) {
+        return productService.getProductById(id);
     }
 }

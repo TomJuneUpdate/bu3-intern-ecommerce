@@ -1,0 +1,7 @@
+package com.nw.intern.bu3internecommerce.repository;
+
+import com.nw.intern.bu3internecommerce.entity.CartItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+}
