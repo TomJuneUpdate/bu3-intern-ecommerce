@@ -65,8 +65,6 @@ public class CartServiceImpl implements CartService {
         }
 
         cartRepository.save(cart);
-        cartItemRepository.save(cartItem);
-
         return convertToCartDto(cart);
     }
 

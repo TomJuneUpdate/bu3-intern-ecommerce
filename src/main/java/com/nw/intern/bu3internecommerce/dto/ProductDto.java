@@ -2,10 +2,6 @@ package com.nw.intern.bu3internecommerce.dto;
 
 import com.nw.intern.bu3internecommerce.entity.Category;
 import com.nw.intern.bu3internecommerce.entity.Review;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -104,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
         }
         productRepository.deleteById(id);
     }
+    @Override
     public Page<ProductDto> getAllProducts(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);

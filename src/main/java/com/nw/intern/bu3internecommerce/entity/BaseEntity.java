@@ -15,10 +15,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
 @Setter
 @Getter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity implements Serializable {
     @CreatedBy
 //    @Column(nullable = false, length = 50, updatable = false)
@@ -31,7 +31,7 @@ public abstract class BaseEntity implements Serializable {
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @LastModifiedBy
-//    @Column(length = 50)
+    @Column(length = 50)
     @JsonIgnore
     private String updatedBy;
 

@@ -44,6 +44,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteProduct(@PathVariable long id) {
+        productService.deleteProduct(id);
         return ApiResponse.ok();
     }
 
