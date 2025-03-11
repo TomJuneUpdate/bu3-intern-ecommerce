@@ -1,6 +1,7 @@
-package com.nw.intern.bu3internecommerce.entity;
+package com.nw.intern.bu3internecommerce.entity.order;
 
-import com.nw.intern.bu3internecommerce.enums.OrderStatus;
+import com.nw.intern.bu3internecommerce.entity.Address;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

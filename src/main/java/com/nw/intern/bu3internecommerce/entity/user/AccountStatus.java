@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.enums;
+package com.nw.intern.bu3internecommerce.entity.user;
 
 /**
  * Enum đại diện cho trạng thái của tài khoản người dùng trong hệ thống.

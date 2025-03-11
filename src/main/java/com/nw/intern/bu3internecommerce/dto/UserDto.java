@@ -1,11 +1,7 @@
 package com.nw.intern.bu3internecommerce.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nw.intern.bu3internecommerce.entity.Address;
-import com.nw.intern.bu3internecommerce.enums.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import com.nw.intern.bu3internecommerce.entity.user.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,7 +1,6 @@
 package com.nw.intern.bu3internecommerce.repository;
 
-import com.nw.intern.bu3internecommerce.entity.Order;
-import com.nw.intern.bu3internecommerce.entity.User;
+import com.nw.intern.bu3internecommerce.entity.order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

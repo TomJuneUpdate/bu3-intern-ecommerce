@@ -1,5 +1,6 @@
 package com.nw.intern.bu3internecommerce.entity;
 
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

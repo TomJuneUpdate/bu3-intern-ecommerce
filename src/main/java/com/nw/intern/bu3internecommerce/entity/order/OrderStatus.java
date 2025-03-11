@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.enums;
+package com.nw.intern.bu3internecommerce.entity.order;
 
 /**
  * Enum OrderStatus đại diện cho các trạng thái của đơn hàng.

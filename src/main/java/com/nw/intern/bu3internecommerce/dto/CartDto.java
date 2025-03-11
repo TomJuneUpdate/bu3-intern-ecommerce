@@ -1,7 +1,6 @@
 package com.nw.intern.bu3internecommerce.dto;
 
-import com.nw.intern.bu3internecommerce.entity.CartItem;
-import com.nw.intern.bu3internecommerce.entity.User;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

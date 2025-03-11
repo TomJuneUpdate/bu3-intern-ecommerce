@@ -1,7 +1,7 @@
 package com.nw.intern.bu3internecommerce.service;
 
 import com.nw.intern.bu3internecommerce.dto.UserDto;
-import com.nw.intern.bu3internecommerce.entity.User;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 

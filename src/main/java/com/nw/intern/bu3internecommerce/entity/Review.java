@@ -1,6 +1,7 @@
 package com.nw.intern.bu3internecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

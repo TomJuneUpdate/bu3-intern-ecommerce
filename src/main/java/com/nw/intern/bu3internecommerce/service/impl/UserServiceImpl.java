@@ -1,7 +1,7 @@
 package com.nw.intern.bu3internecommerce.service.impl;
 
 import com.nw.intern.bu3internecommerce.dto.UserDto;
-import com.nw.intern.bu3internecommerce.entity.User;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
 import com.nw.intern.bu3internecommerce.repository.UserRepository;
 import com.nw.intern.bu3internecommerce.service.UserService;

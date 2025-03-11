@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.enums;
+package com.nw.intern.bu3internecommerce.entity.user;
 
 public enum Role {
     ADMIN,

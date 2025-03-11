@@ -1,5 +1,6 @@
-package com.nw.intern.bu3internecommerce.entity;
+package com.nw.intern.bu3internecommerce.entity.order;
 
+import com.nw.intern.bu3internecommerce.entity.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

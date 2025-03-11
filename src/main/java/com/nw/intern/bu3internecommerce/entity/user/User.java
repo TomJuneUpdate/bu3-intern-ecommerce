@@ -1,8 +1,10 @@
-package com.nw.intern.bu3internecommerce.entity;
+package com.nw.intern.bu3internecommerce.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nw.intern.bu3internecommerce.enums.Role;
+import com.nw.intern.bu3internecommerce.entity.Address;
+import com.nw.intern.bu3internecommerce.entity.BaseEntity;
+import com.nw.intern.bu3internecommerce.entity.Coupon;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
