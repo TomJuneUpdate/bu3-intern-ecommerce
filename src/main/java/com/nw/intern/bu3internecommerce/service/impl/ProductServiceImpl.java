@@ -23,14 +23,14 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public ApiResponse<ProductDto> getProductById(Long id) {
+    public ProductDto getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        return ApiResponse.ok(convertToDto(product));
+        return convertToDto(product);
     }
 
     @Override
-    public ApiResponse<ProductDto> createProduct(AddProductRequest request) {
+    public ProductDto createProduct(AddProductRequest request) {
         // 🔹 1. Kiểm tra danh mục, nếu chưa có thì tạo mới
         Category category = categoryRepository.findByName(request.getCategory())
                 .orElseGet(() -> {
@@ -60,12 +60,12 @@ public class ProductServiceImpl implements ProductService {
         // 🔹 4. Lưu vào DB
         Product savedProduct = productRepository.save(product);
 
-        return ApiResponse.ok(convertToDto(savedProduct));
+        return convertToDto(savedProduct);
     }
 
 
     @Override
-    public ApiResponse<ProductDto> updateProduct(Long id, ProductDto productDto) {
+    public ProductDto updateProduct(Long id, ProductDto productDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Category category = existingProduct.getCategory();
@@ -92,18 +92,17 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setSizes(productDto.getSizes());
         existingProduct.setCategory(category);
         Product updatedProduct = productRepository.save(existingProduct);
-        return ApiResponse.ok(convertToDto(updatedProduct));
+        return convertToDto(updatedProduct);
     }
 
 
 
     @Override
-    public ApiResponse<Void> deleteProduct(Long id) {
+    public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            return ApiResponse.fail("Product not found");
+            throw new ResourceNotFoundException("Product not found");
         }
         productRepository.deleteById(id);
-        return ApiResponse.ok();
     }
     public Page<ProductDto> getAllProducts(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

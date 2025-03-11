@@ -10,13 +10,13 @@ public interface ProductService {
 
     Page<ProductDto> getAllProducts(int page, int size, String sortBy, String sortDir);
 
-    ApiResponse<ProductDto> getProductById(Long id);
+    ProductDto getProductById(Long id);
 
-    ApiResponse<ProductDto> createProduct(AddProductRequest request);
+    ProductDto createProduct(AddProductRequest request);
 
-    ApiResponse<ProductDto> updateProduct(Long id, ProductDto productDto);
+    ProductDto updateProduct(Long id, ProductDto productDto);
 
-    ApiResponse<Void> deleteProduct(Long id);
+    void deleteProduct(Long id);
 
     ProductDto convertToDto(Product product);
 }

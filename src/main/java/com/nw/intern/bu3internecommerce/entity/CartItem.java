@@ -39,8 +39,5 @@ public class CartItem {
 
     @Min(0)
     private Integer quantity = 1;
-
-    private Double mrpPrice; // Giá gốc của sản phẩm
-
-    private Double sellingPrice; // Giá bán thực tế sau khi áp dụng giảm giá hoặc khuyến mãi
+    
 }

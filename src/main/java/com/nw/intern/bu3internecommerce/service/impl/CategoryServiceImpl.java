@@ -20,29 +20,29 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public ApiResponse<List<CategoryDto>> getAllCategories() {
+    public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
 
         // Trả về danh sách rỗng nếu không có danh mục nào
         if (categories.isEmpty()) {
-            return ApiResponse.ok(new ArrayList<>());
+            return new ArrayList<>();
         }
 
         List<CategoryDto> categoryDtos = categories.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
-        return ApiResponse.ok(categoryDtos);
+        return categoryDtos;
     }
 
 
     @Override
-    public ApiResponse<CategoryDto> getCategoryById(Long id) {
-        return ApiResponse.ok(convertToDto(categoryRepository.findById(id).get()));
+    public CategoryDto getCategoryById(Long id) {
+        return convertToDto(categoryRepository.findById(id).get());
     }
 
     @Override
-    public ApiResponse<CategoryDto> createCategory(AddCategoryRequest request) {
+    public CategoryDto createCategory(AddCategoryRequest request) {
         // Kiểm tra xem danh mục đã tồn tại chưa
         if (categoryRepository.existsByName(request.getName())){
             throw new IllegalArgumentException("Category name already exists");
@@ -55,16 +55,15 @@ public class CategoryServiceImpl implements CategoryService {
         newCategory.setCode(newCode);
         // Lưu vào DB
         newCategory = categoryRepository.save(newCategory);
-        return ApiResponse.ok(convertToDto(newCategory));
+        return convertToDto(newCategory);
     }
 
     @Override
-    public ApiResponse<Void> deleteCategoryById(Long id) {
+    public void deleteCategoryById(Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Category not found");
         }
         categoryRepository.deleteById(id);
-        return ApiResponse.ok();
     }
 
     /**

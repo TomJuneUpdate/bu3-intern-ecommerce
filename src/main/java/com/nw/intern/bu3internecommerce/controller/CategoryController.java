@@ -22,22 +22,21 @@ public class CategoryController {
     private final CategoryService categoryService;
     @GetMapping
     public ApiResponse<List<CategoryDto>> getAllCategories() {
-        return categoryService.getAllCategories();
+        return ApiResponse.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
     public ApiResponse<CategoryDto> getCategoryById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id);
+        return ApiResponse.ok(categoryService.getCategoryById(id));
     }
 
     @PostMapping
     public ApiResponse<CategoryDto> createCategory(@RequestBody AddCategoryRequest request) {
-        return categoryService.createCategory(request);
+        return ApiResponse.ok(categoryService.createCategory(request));
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteCategory(@PathVariable Long id) {
-        return categoryService.deleteCategoryById(id);
+        return ApiResponse.ok();
     }
-
 }

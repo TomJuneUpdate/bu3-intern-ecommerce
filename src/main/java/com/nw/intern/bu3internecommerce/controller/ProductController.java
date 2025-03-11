@@ -25,31 +25,31 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Page<ProductDto>> getAllProducts(
+    public ApiResponse<Page<ProductDto>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
-        return ResponseEntity.ok(productService.getAllProducts(page, size, sortBy, sortDir));
+        return ApiResponse.ok(productService.getAllProducts(page, size, sortBy, sortDir));
     }
 
     @PostMapping
     public ApiResponse<ProductDto> createProduct(@RequestBody AddProductRequest addProductRequest) {
-        return productService.createProduct(addProductRequest);
+        return ApiResponse.ok(productService.createProduct(addProductRequest));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<ProductDto> updateProduct(@PathVariable long id, @RequestBody ProductDto productDTO) {
-        return productService.updateProduct(id, productDTO);
+        return ApiResponse.ok(productService.updateProduct(id, productDTO));
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteProduct(@PathVariable long id) {
-        return productService.deleteProduct(id);
+        return ApiResponse.ok();
     }
 
     @GetMapping("/{id}")
     public ApiResponse<ProductDto> findProduct(@PathVariable long id) {
-        return productService.getProductById(id);
+        return ApiResponse.ok(productService.getProductById(id));
     }
 }

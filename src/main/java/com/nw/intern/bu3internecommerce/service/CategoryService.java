@@ -7,8 +7,8 @@ import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import java.util.List;
 
 public interface CategoryService {
-    ApiResponse<List<CategoryDto>> getAllCategories();
-    ApiResponse<CategoryDto> getCategoryById(Long id);
-    ApiResponse<CategoryDto> createCategory(AddCategoryRequest request);
-    ApiResponse<Void> deleteCategoryById(Long id);
+    List<CategoryDto> getAllCategories();
+    CategoryDto getCategoryById(Long id);
+    CategoryDto createCategory(AddCategoryRequest request);
+    void deleteCategoryById(Long id);
 }
