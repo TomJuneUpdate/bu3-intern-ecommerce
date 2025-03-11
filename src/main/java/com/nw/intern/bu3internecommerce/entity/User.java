@@ -33,7 +33,7 @@ public class User extends BaseEntity {
     private String email;
     private String firstName;
     private String lastName;
-    private Integer phone;
+    private String phone;
     private Date dateOfBirth;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user",orphanRemoval = true)
     private Set<Address> addresses = new HashSet<Address>();

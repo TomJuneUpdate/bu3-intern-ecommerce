@@ -37,7 +37,8 @@ public class CartItem {
 
     private String size;
 
+    private String color;
     @Min(0)
-    private Integer quantity = 1;
+    private Integer purchaseQuantity = 1;
     
 }
