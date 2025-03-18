@@ -29,9 +29,10 @@ public class OrderItem {
 
     @ManyToOne
     private Product product;
-    @Min(0)
-    private int quantity;
+    @Min(1)
+    private int purchaseQuantity;
     private String size;
+    private String color;
     @Min(0)
     private Integer mrpPrice;
     @Min(0)

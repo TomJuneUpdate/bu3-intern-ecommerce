@@ -40,6 +40,10 @@ public class CartItem {
 
     private String color;
     @Min(0)
-    private Integer purchaseQuantity = 1;
+    private Integer purchaseQuantity;
+    @Min(0)
+    private Integer mrpPrice;
+    @Min(0)
+    private Integer sellingPrice;
     
 }

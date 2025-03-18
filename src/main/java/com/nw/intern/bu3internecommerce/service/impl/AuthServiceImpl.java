@@ -28,7 +28,6 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Username đã tồn tại!");
         }
 
-        // Tạo user mới
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -40,7 +39,6 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(Role.CUSTOMER);
         userRepository.save(user);
 
-        // Tạo token JWT
         String token = jwtUtils.generateToken(user);
 
         return token;

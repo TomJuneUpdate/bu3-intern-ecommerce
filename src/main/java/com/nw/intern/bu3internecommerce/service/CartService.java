@@ -1,8 +1,6 @@
 package com.nw.intern.bu3internecommerce.service;
 
 import com.nw.intern.bu3internecommerce.dto.CartDto;
-import com.nw.intern.bu3internecommerce.dto.CartItemDto;
-import com.nw.intern.bu3internecommerce.dto.request.AddCategoryRequest;
 import com.nw.intern.bu3internecommerce.dto.request.AddToCartRequest;
 
 public interface CartService {

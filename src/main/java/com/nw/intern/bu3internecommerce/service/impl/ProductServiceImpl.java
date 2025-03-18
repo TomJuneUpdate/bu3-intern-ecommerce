@@ -2,7 +2,6 @@ package com.nw.intern.bu3internecommerce.service.impl;
 
 import com.nw.intern.bu3internecommerce.dto.ProductDto;
 import com.nw.intern.bu3internecommerce.dto.request.AddProductRequest;
-import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import com.nw.intern.bu3internecommerce.entity.Category;
 import com.nw.intern.bu3internecommerce.entity.Product;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
@@ -31,66 +30,49 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(AddProductRequest request) {
-        // 🔹 1. Kiểm tra danh mục, nếu chưa có thì tạo mới
-        Category category = categoryRepository.findByName(request.getCategory())
-                .orElseGet(() -> {
-                    Category newCategory = new Category();
-                    newCategory.setName(request.getCategory());
-                    newCategory.setCode(generateCategoryCode());
-                    return categoryRepository.save(newCategory);
-                });
 
-        // 🔹 2. Tạo mã sản phẩm mới theo format {category_code}_xxxxxx
-        String productCode = generateProductCode(category);
+        Category category = categoryRepository
+                .findByName(request.getCategory())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh muc"));
 
-        // 🔹 3. Tạo sản phẩm
-        Product product = new Product();
-        product.setCode(productCode);
-        product.setName(request.getName());
-        product.setMrpPrice(request.getMrpPrice());
-        product.setSellingPrice(request.getSellingPrice());
-        product.setQuantity(request.getQuantity());
-        product.setDiscountPercentage(request.getDiscountPercentage());
-        product.setDescription(request.getDescription());
-        product.setColor(request.getColor());
-        product.setImageUrls(request.getImageUrls());
-        product.setSizes(request.getSizes());
-        product.setCategory(category);
+        double sellingPrice = sellingPrice(request.getMrpPrice(), request.getDiscountPercentage());
 
-        // 🔹 4. Lưu vào DB
+        String code = generateProductCode(category);
+
+        Product product = Product.builder()
+                .code(code)
+                .name(request.getName())
+                .mrpPrice(request.getMrpPrice())
+                .sellingPrice(sellingPrice)
+                .quantity(request.getQuantity())
+                .discountPercentage(request.getDiscountPercentage())
+                .description(request.getDescription())
+                .color(request.getColor())
+                .imageUrls(request.getImageUrls())
+                .sizes(request.getSizes())
+                .category(category)
+                .build();
+
         Product savedProduct = productRepository.save(product);
 
         return convertToDto(savedProduct);
     }
 
-
     @Override
     public ProductDto updateProduct(Long id, ProductDto productDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        Category category = existingProduct.getCategory();
-        boolean isCategoryChanged = !category.getName().equals(productDto.getCategory().getName());
-
-        if (isCategoryChanged) {
-            category = categoryRepository.findByName(productDto.getCategory().getName())
-                    .orElseGet(() -> {
-                        Category newCategory = new Category();
-                        newCategory.setName(productDto.getCategory().getName());
-                        newCategory.setCode(generateCategoryCode());
-                        return categoryRepository.save(newCategory);
-                    });
-            existingProduct.setCode(generateProductCode(category));
-        }
+        double sellingPrice = sellingPrice(productDto.getMrpPrice()
+                , productDto.getDiscountPercentage());
         existingProduct.setName(productDto.getName());
         existingProduct.setMrpPrice(productDto.getMrpPrice());
-        existingProduct.setSellingPrice(productDto.getSellingPrice());
+        existingProduct.setSellingPrice(sellingPrice);
         existingProduct.setQuantity(productDto.getQuantity());
         existingProduct.setDiscountPercentage(productDto.getDiscountPercentage());
         existingProduct.setDescription(productDto.getDescription());
         existingProduct.setColor(productDto.getColor());
         existingProduct.setImageUrls(productDto.getImageUrls());
         existingProduct.setSizes(productDto.getSizes());
-        existingProduct.setCategory(category);
         Product updatedProduct = productRepository.save(existingProduct);
         return convertToDto(updatedProduct);
     }
@@ -104,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
         }
         productRepository.deleteById(id);
     }
+
     @Override
     public Page<ProductDto> getAllProducts(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -132,6 +115,11 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    private double sellingPrice(double price, int discountPercentage) {
+        double sellingPrice = price * (1 - discountPercentage / 100.0);
+        return sellingPrice;
+    }
+
     /**
      * Tạo mã sản phẩm theo định dạng {category_code}_xxxxxx
      */
@@ -150,16 +138,4 @@ public class ProductServiceImpl implements ProductService {
         return String.format("%s_%06d", category.getCode(), nextNumber);
     }
 
-    /**
-     * Sinh mã danh mục tự động (0001 - 9999)
-     */
-    private String generateCategoryCode() {
-        String maxCode = categoryRepository.findMaxCategoryCode();
-
-        if (maxCode == null) {
-            return "0001";
-        }
-        int nextCode = Integer.parseInt(maxCode) + 1;
-        return String.format("%04d", nextCode);
-    }
 }
