@@ -15,7 +15,6 @@ public class ApiResponse<T> implements Serializable {
 
     private String code;
     private String msg;
-    @JsonIgnore
     private T data;
 
     public static <T> ApiResponse<T> ok() {

@@ -21,14 +21,14 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity implements Serializable {
     @CreatedBy
-//    @Column(nullable = false, length = 50, updatable = false)
+    @Column(nullable = false, length = 50, updatable = false)
     @JsonIgnore
     private String createdBy;
 
     @CreatedDate
     @Column(updatable = false)
     @JsonIgnore
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createdDate;
 
     @LastModifiedBy
     @Column(length = 50)
@@ -37,5 +37,5 @@ public abstract class BaseEntity implements Serializable {
 
     @LastModifiedDate
     @JsonIgnore
-    private LocalDateTime updatedDate = LocalDateTime.now();
+    private LocalDateTime updatedDate;
 }

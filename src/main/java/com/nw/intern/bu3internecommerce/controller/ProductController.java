@@ -33,23 +33,28 @@ public class ProductController {
     }
 
     @PostMapping
-    public ApiResponse<ProductDto> createProduct(@RequestBody AddProductRequest addProductRequest) {
+    public ApiResponse<ProductDto> createProduct(
+            @RequestBody AddProductRequest addProductRequest) {
         return ApiResponse.ok(productService.createProduct(addProductRequest));
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<ProductDto> updateProduct(@PathVariable long id, @RequestBody ProductDto productDTO) {
+    public ApiResponse<ProductDto> updateProduct(
+            @PathVariable long id,
+            @RequestBody ProductDto productDTO) {
         return ApiResponse.ok(productService.updateProduct(id, productDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteProduct(@PathVariable long id) {
+    public ApiResponse<Void> deleteProduct(
+            @PathVariable long id) {
         productService.deleteProduct(id);
         return ApiResponse.ok();
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<ProductDto> findProduct(@PathVariable long id) {
+    public ApiResponse<ProductDto> findProduct(
+            @PathVariable long id) {
         return ApiResponse.ok(productService.getProductById(id));
     }
 }

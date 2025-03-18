@@ -1,4 +1,4 @@
-package com.nw.intern.bu3internecommerce.entity;
+package com.nw.intern.bu3internecommerce.entity.cart;
 
 import com.nw.intern.bu3internecommerce.entity.user.User;
 import jakarta.persistence.CascadeType;

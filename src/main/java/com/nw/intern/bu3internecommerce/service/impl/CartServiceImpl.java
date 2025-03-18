@@ -2,10 +2,9 @@ package com.nw.intern.bu3internecommerce.service.impl;
 
 import com.nw.intern.bu3internecommerce.dto.CartDto;
 import com.nw.intern.bu3internecommerce.dto.CartItemDto;
-import com.nw.intern.bu3internecommerce.dto.request.AddCategoryRequest;
 import com.nw.intern.bu3internecommerce.dto.request.AddToCartRequest;
-import com.nw.intern.bu3internecommerce.entity.Cart;
-import com.nw.intern.bu3internecommerce.entity.CartItem;
+import com.nw.intern.bu3internecommerce.entity.cart.Cart;
+import com.nw.intern.bu3internecommerce.entity.cart.CartItem;
 import com.nw.intern.bu3internecommerce.entity.Product;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
 import com.nw.intern.bu3internecommerce.repository.CartItemRepository;
