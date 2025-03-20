@@ -34,7 +34,7 @@ public class OrderItem {
     private String size;
     private String color;
     @Min(0)
-    private Integer mrpPrice;
+    private Double mrpPrice;
     @Min(0)
-    private Integer sellingPrice;
+    private Double sellingPrice;
 }

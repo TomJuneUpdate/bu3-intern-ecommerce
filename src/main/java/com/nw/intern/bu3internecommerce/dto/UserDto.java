@@ -1,6 +1,6 @@
 package com.nw.intern.bu3internecommerce.dto;
 
-import com.nw.intern.bu3internecommerce.entity.Address;
+import com.nw.intern.bu3internecommerce.entity.user.Address;
 import com.nw.intern.bu3internecommerce.entity.user.Role;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 @Builder
 public class UserDto {
+    private Long id;
     private String username;
     private String email;
     private String firstName;

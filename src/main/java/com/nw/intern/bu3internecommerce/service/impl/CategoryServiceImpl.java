@@ -71,6 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     private CategoryDto convertToDto(Category category) {
         return CategoryDto.builder()
+                .id(category.getId())
                 .code(category.getCode())
                 .name(category.getName())
                 .build();

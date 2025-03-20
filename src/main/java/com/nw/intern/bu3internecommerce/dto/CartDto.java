@@ -5,16 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Getter
 @Setter
 @Builder
 public class CartDto {
+    private Long id;
     private User user;
     private Set<CartItemDto> cartItems;
-    private double totalSellingPrice;
-    private int totalMrpPrice;
-    private int discount;
+    private Double totalSellingPrice;
     private String couponCode;
 }

@@ -29,7 +29,9 @@ public class Review {
     private Long id;
 
     private String reviewText;
+
     private Double rating;
+
     @ElementCollection
     private List<String> productImages;
 
@@ -37,6 +39,7 @@ public class Review {
     @JsonIgnore
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false )

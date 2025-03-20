@@ -1,5 +1,6 @@
 package com.nw.intern.bu3internecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,7 @@ public class Category {
     @Column(nullable = false, length = 4,unique = true)
     private String code; // VD: 0001, 0002
 
+    @JsonIgnore
     @OneToMany
     private Set<Product> products = new HashSet<>();
 }

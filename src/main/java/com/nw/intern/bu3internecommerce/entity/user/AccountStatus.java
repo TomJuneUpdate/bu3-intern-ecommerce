@@ -1,9 +1,5 @@
 package com.nw.intern.bu3internecommerce.entity.user;
 
-/**
- * Enum đại diện cho trạng thái của tài khoản người dùng trong hệ thống.
- * Trạng thái này giúp kiểm soát quyền truy cập và các hành động có thể thực hiện.
- */
 public enum AccountStatus {
 
     /**

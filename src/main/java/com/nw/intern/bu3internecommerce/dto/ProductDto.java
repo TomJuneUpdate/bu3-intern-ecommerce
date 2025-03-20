@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @Builder
 public class ProductDto {
+    private Long id;
     private String code;
     private String name;
     private Integer quantity;

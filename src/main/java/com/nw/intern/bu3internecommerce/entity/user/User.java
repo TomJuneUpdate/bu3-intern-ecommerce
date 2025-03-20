@@ -2,7 +2,6 @@ package com.nw.intern.bu3internecommerce.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nw.intern.bu3internecommerce.entity.Address;
 import com.nw.intern.bu3internecommerce.entity.BaseEntity;
 import com.nw.intern.bu3internecommerce.entity.Coupon;
 import jakarta.persistence.CascadeType;
@@ -42,13 +41,18 @@ public class User extends BaseEntity implements UserDetails {
     private String lastName;
     private String phone;
     private Date dateOfBirth;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user",orphanRemoval = true)
+    @JsonIgnore
     private Set<Address> addresses = new HashSet<Address>();
+
     @ManyToMany
     @JsonIgnore
     private Set<Coupon> coupons = new HashSet<>();
+
     @Enumerated(EnumType.ORDINAL)
     private Role role;
+
     private boolean isActive = true;
 
     @Override

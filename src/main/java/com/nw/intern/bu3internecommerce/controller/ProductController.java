@@ -6,6 +6,7 @@ import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import com.nw.intern.bu3internecommerce.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,10 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
-        return ApiResponse.ok(productService.getAllProducts(page, size, sortBy, sortDir));
+
+        Page<ProductDto> products = productService.getAllProducts(page, size, sortBy, sortDir);
+
+        return ApiResponse.ok(products);
     }
 
     @PostMapping

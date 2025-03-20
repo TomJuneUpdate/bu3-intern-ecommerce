@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -88,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ProductDto> getAllProducts(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -101,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto convertToDto(Product product) {
         return ProductDto.builder()
+                .id(product.getId())
                 .code(product.getCode())
                 .name(product.getName())
                 .mrpPrice(product.getMrpPrice())

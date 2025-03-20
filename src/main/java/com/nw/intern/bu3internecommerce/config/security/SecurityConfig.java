@@ -1,6 +1,5 @@
 package com.nw.intern.bu3internecommerce.config.security;
 
-import com.nw.intern.bu3internecommerce.config.jwt.JwtAuthFilter;
 import com.nw.intern.bu3internecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

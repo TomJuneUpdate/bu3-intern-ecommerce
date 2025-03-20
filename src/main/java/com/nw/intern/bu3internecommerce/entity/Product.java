@@ -1,9 +1,12 @@
 package com.nw.intern.bu3internecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,15 +43,20 @@ public class Product extends BaseEntity  {
     private String description;
     @Min(0)
     private Integer quantity;
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> color;
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> imageUrls = new ArrayList<String>();
     private int numRating;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> sizes;
+
+    @JsonBackReference
     @ManyToOne
     private Category category;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 }

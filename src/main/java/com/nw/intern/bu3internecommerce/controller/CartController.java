@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class CartController {
     private final CartService cartService;
 
-    @GetMapping("/{userId}")
-    public ApiResponse<CartDto> getCartByUserId(@PathVariable Long userId) {
-        CartDto cart = cartService.getCartByUserId(userId);
+    @GetMapping
+    public ApiResponse<CartDto> getCartByUser() {
+        CartDto cart = cartService.getCartByUser();
         return ApiResponse.ok(cart);
     }
 

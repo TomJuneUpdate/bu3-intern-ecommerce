@@ -6,6 +6,7 @@ import com.nw.intern.bu3internecommerce.dto.request.AddToCartRequest;
 import com.nw.intern.bu3internecommerce.entity.cart.Cart;
 import com.nw.intern.bu3internecommerce.entity.cart.CartItem;
 import com.nw.intern.bu3internecommerce.entity.Product;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
 import com.nw.intern.bu3internecommerce.repository.CartItemRepository;
 import com.nw.intern.bu3internecommerce.repository.CartRepository;
@@ -13,8 +14,11 @@ import com.nw.intern.bu3internecommerce.repository.ProductRepository;
 import com.nw.intern.bu3internecommerce.repository.UserRepository;
 import com.nw.intern.bu3internecommerce.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,45 +30,57 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepository;
 
     @Override
-    public CartDto getCartByUserId(Long userId) {
-        Cart cart = cartRepository.findByUserId(userId)
+    @Transactional
+    public CartDto getCartByUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Cart cart = cartRepository.findByUserUsername(username)
                 .orElseThrow(()
-                        -> new ResourceNotFoundException("Cart not found for user: " + userId));
+                        -> new ResourceNotFoundException("Cart not found for user"));
         return convertToCartDto(cart);
     }
 
     @Override
     public CartDto addToCart(Long userId, AddToCartRequest request) {
+        // Kiểm tra user có tồn tại không trước khi lấy thông tin
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        //  Kiểm tra xem sản phẩm có tồn tại không
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
+        // Kiểm tra xem user có giỏ hàng không, nếu không thì tạo mới
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart newCart = new Cart();
-            newCart.setUser(userRepository.findById(userId).get());
+            newCart.setUser(user);
             return cartRepository.save(newCart);
         });
 
-        CartItem cartItem = cart.getCartItems().stream()
+        // Tìm sản phẩm trong giỏ hàng theo ID, size, color
+        Optional<CartItem> optionalCartItem = cart.getCartItems().stream()
                 .filter(item -> item.getProduct().getId().equals(product.getId()) &&
                         item.getSize().equals(request.getSize()) &&
                         item.getColor().equals(request.getColor()))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
 
-        if (cartItem == null) {
-            cartItem = new CartItem();
+        if (optionalCartItem.isPresent()) {
+            //  Nếu đã có sản phẩm trong giỏ hàng, tăng số lượng
+            CartItem cartItem = optionalCartItem.get();
+            cartItem.setPurchaseQuantity(request.getQuantity());
+            cartItemRepository.save(cartItem);
+        } else {
+            // Nếu chưa có, tạo mới sản phẩm trong giỏ hàng
+            CartItem cartItem = new CartItem();
             cartItem.setCart(cart);
             cartItem.setProduct(product);
             cartItem.setSize(request.getSize());
             cartItem.setColor(request.getColor());
             cartItem.setPurchaseQuantity(request.getQuantity());
-            cart.getCartItems().add(cartItem);
-        } else {
-            cartItem.setPurchaseQuantity(cartItem.getPurchaseQuantity() + request.getQuantity());
+            cartItemRepository.save(cartItem);
         }
 
-        cartRepository.save(cart);
-        return convertToCartDto(cart);
+        // Trả về thông tin giỏ hàng sau khi cập nhật
+        return convertToCartDto(cartRepository.findByUserId(userId).get());
     }
 
     @Override
@@ -111,18 +127,18 @@ public class CartServiceImpl implements CartService {
     private CartDto convertToCartDto(Cart cart) {
         return CartDto.builder()
                 .user(cart.getUser())
+                .id(cart.getId())
                 .cartItems(cart.getCartItems().stream()
                         .map(this::convertToCartItemDto)
                         .collect(Collectors.toSet()))
                 .totalSellingPrice(cart.getTotalSellingPrice())
-                .totalMrpPrice(cart.getTotalMrpPrice())
-                .discount(cart.getDiscount())
                 .couponCode(cart.getCouponCode())
                 .build();
     }
 
     private CartItemDto convertToCartItemDto(CartItem cartItem) {
         return CartItemDto.builder()
+                .id(cartItem.getId())
                 .product(cartItem.getProduct())
                 .size(cartItem.getSize())
                 .color(cartItem.getColor())

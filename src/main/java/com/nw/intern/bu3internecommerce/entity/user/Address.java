@@ -1,6 +1,6 @@
-package com.nw.intern.bu3internecommerce.entity;
+package com.nw.intern.bu3internecommerce.entity.user;
 
-import com.nw.intern.bu3internecommerce.entity.user.User;
+import com.nw.intern.bu3internecommerce.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = "addresses")
-public class Address extends BaseEntity{
+public class Address extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
