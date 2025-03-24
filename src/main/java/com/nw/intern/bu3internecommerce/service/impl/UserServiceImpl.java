@@ -127,9 +127,9 @@ public class UserServiceImpl implements UserService {
         // Tìm người dùng
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với ID: " + userId));
-        
-        // Lấy danh sách địa chỉ và phân trang
-        List<Address> addresses = new ArrayList<>(user.getAddresses());
+
+        List<Address> addresses = addressRepository.findByUser_Id(userId);
+
         int start = page * size;
         int end = Math.min(start + size, addresses.size());
         

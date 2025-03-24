@@ -29,7 +29,9 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username đã tồn tại!");
         }
-
+        if (userRepository.existsByEmail(request.getUsername())) {
+            throw new RuntimeException("Email đã được dùng!");
+        }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));

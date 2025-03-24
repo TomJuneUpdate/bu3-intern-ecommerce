@@ -61,6 +61,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setOrderStatus(OrderStatus.PENDING);
         order.setShippingAddress(selectedAddress);
+        order = orderRepository.save(order); //Lưu trước để có ID
 
         // Chuyển sản phẩm từ giỏ hàng sang đơn hàng
         List<OrderItem> orderItems = cart.getCartItems().stream().map(cartItem -> {
