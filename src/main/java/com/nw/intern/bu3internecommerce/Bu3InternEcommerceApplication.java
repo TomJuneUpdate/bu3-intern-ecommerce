@@ -13,5 +13,4 @@ public class Bu3InternEcommerceApplication {
     public static void main(String[] args) {
         SpringApplication.run(Bu3InternEcommerceApplication.class, args);
     }
-
 }
