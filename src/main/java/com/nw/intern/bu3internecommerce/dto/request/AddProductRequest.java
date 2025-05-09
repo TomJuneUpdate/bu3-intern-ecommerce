@@ -28,6 +28,5 @@ public class AddProductRequest {
     @NotBlank
     private String category;
     private Set<String> color;
-    private List<String> imageUrls = new ArrayList<String>();
     private Set<String> sizes;
 }

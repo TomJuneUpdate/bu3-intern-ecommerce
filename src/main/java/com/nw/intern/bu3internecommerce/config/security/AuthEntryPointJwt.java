@@ -1,34 +1,37 @@
 package com.nw.intern.bu3internecommerce.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nw.intern.bu3internecommerce.exception.ErrorDetails;
-import jakarta.servlet.ServletException;
+import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Date;
 
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
+
     @Override
-    public void commence(HttpServletRequest request
-            , HttpServletResponse response
-            , AuthenticationException authException)
-            throws IOException, ServletException {
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException authException) throws IOException {
+        logger.error("Unauthorized error: {}. Path: {}", authException.getMessage(), request.getRequestURI());
+
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ErrorDetails errorDetails = ErrorDetails.builder()
-                .path(request.getRequestURI())
-                .message(authException.getMessage())
-                .errorCode(HttpServletResponse.SC_UNAUTHORIZED)
-                .timestamp(new Date())
-                .build();
+
+        String message = authException.getMessage().contains("No token")
+                ? "Access token is missing"
+                : "Access token is invalid or expired";
+
+        ApiResponse<Void> apiResponse = ApiResponse.fail(message);
         ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), errorDetails);
+        mapper.writeValue(response.getOutputStream(), apiResponse);
     }
 }

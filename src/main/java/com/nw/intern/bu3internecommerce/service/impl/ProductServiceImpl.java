@@ -49,7 +49,6 @@ public class ProductServiceImpl implements ProductService {
                 .discountPercentage(request.getDiscountPercentage())
                 .description(request.getDescription())
                 .color(request.getColor())
-                .imageUrls(request.getImageUrls())
                 .sizes(request.getSizes())
                 .category(category)
                 .build();
