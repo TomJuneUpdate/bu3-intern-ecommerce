@@ -7,16 +7,20 @@ import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
 import com.nw.intern.bu3internecommerce.repository.AddressRepository;
 import com.nw.intern.bu3internecommerce.repository.UserRepository;
 import com.nw.intern.bu3internecommerce.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service xử lý các logic liên quan đến người dùng
@@ -30,7 +34,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDto> getAllUsers(int page, int size, String sortBy, String sortDir) {
         // Tạo đối tượng sắp xếp dựa trên tham số
-        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<User> users = userRepository.findAll(pageable);
         return users.map(this::convertToDto);
@@ -43,12 +48,6 @@ public class UserServiceImpl implements UserService {
         return convertToDto(user);
     }
 
-    @Override
-    public UserDto getCurrentUser(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với tên đăng nhập: " + username));
-        return convertToDto(user);
-    }
 
     @Override
     public UserDto updateUserById(Long userId, UserDto userDto) {
@@ -62,7 +61,6 @@ public class UserServiceImpl implements UserService {
         existingUser.setEmail(userDto.getEmail());
         existingUser.setPhone(userDto.getPhone());
         existingUser.setDateOfBirth(userDto.getDateOfBirth());
-        existingUser.setRole(userDto.getRole());
         
         // Lưu thông tin đã cập nhật
         User updatedUser = userRepository.save(existingUser);
@@ -155,7 +153,14 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .phone(user.getPhone() != null ? user.getPhone() : null)
                 .dateOfBirth(user.getDateOfBirth())
-                .role(user.getRole())
                 .build();
+    }
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("The authenticated user: " +authentication.getName());
+        String email = authentication.getName();
+        return Optional.ofNullable(userRepository.findByEmail(email))
+                .orElseThrow(() -> new EntityNotFoundException("Log in required!"));
     }
 }

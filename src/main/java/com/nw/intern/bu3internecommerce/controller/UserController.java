@@ -3,12 +3,19 @@ package com.nw.intern.bu3internecommerce.controller;
 import com.nw.intern.bu3internecommerce.dto.UserDto;
 import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import com.nw.intern.bu3internecommerce.entity.user.Address;
+import com.nw.intern.bu3internecommerce.entity.user.User;
 import com.nw.intern.bu3internecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller quản lý các API liên quan đến người dùng
@@ -21,13 +28,14 @@ public class UserController {
 
     /**
      * Lấy danh sách tất cả người dùng có phân trang
-     * @param page Số trang (mặc định: 0)
-     * @param size Số lượng phần tử mỗi trang (mặc định: 10)
-     * @param sortBy Tiêu chí sắp xếp (mặc định: id)
+     *
+     * @param page    Số trang (mặc định: 0)
+     * @param size    Số lượng phần tử mỗi trang (mặc định: 10)
+     * @param sortBy  Tiêu chí sắp xếp (mặc định: id)
      * @param sortDir Thứ tự sắp xếp (mặc định: tăng dần)
      * @return Danh sách người dùng đã phân trang
      */
-    @GetMapping
+    @GetMapping("/all")
     public ApiResponse<Page<UserDto>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -38,6 +46,7 @@ public class UserController {
 
     /**
      * Lấy thông tin người dùng theo ID
+     *
      * @param userId ID của người dùng
      * @return Thông tin người dùng
      */
@@ -47,18 +56,9 @@ public class UserController {
     }
 
     /**
-     * Lấy thông tin người dùng đang đăng nhập
-     * @param userDetails Thông tin người dùng từ Spring Security
-     * @return Thông tin người dùng hiện tại
-     */
-    @GetMapping("/me")
-    public ApiResponse<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        return ApiResponse.ok(userService.getCurrentUser(userDetails.getUsername()));
-    }
-
-    /**
      * Cập nhật thông tin người dùng
-     * @param userId ID của người dùng cần cập nhật
+     *
+     * @param userId  ID của người dùng cần cập nhật
      * @param userDto Thông tin mới của người dùng
      * @return Thông tin người dùng đã được cập nhật
      */
@@ -72,6 +72,7 @@ public class UserController {
 
     /**
      * Xóa người dùng (soft delete)
+     *
      * @param id ID của người dùng cần xóa
      * @return Thông báo xóa thành công
      */
@@ -83,7 +84,8 @@ public class UserController {
 
     /**
      * Thêm địa chỉ mới cho người dùng
-     * @param userId ID của người dùng
+     *
+     * @param userId  ID của người dùng
      * @param address Thông tin địa chỉ mới
      * @return Địa chỉ đã được thêm
      */
@@ -94,9 +96,10 @@ public class UserController {
 
     /**
      * Cập nhật địa chỉ của người dùng
-     * @param userId ID của người dùng
+     *
+     * @param userId    ID của người dùng
      * @param addressId ID của địa chỉ cần cập nhật
-     * @param address Thông tin địa chỉ mới
+     * @param address   Thông tin địa chỉ mới
      * @return Địa chỉ đã được cập nhật
      */
     @PutMapping("/{userId}/addresses/{addressId}")
@@ -109,7 +112,8 @@ public class UserController {
 
     /**
      * Xóa địa chỉ của người dùng
-     * @param userId ID của người dùng
+     *
+     * @param userId    ID của người dùng
      * @param addressId ID của địa chỉ cần xóa
      * @return Thông báo xóa thành công
      */
@@ -121,9 +125,10 @@ public class UserController {
 
     /**
      * Lấy danh sách địa chỉ của người dùng có phân trang
+     *
      * @param userId ID của người dùng
-     * @param page Số trang (mặc định: 0)
-     * @param size Số lượng phần tử mỗi trang (mặc định: 10)
+     * @param page   Số trang (mặc định: 0)
+     * @param size   Số lượng phần tử mỗi trang (mặc định: 10)
      * @return Danh sách địa chỉ đã phân trang
      */
     @GetMapping("/{userId}/addresses")
@@ -132,5 +137,11 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.ok(userService.getUserAddresses(userId, page, size));
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<UserDto> getAuthenticatedUser() {
+        User user = userService.getAuthenticatedUser();
+        return ApiResponse.ok(userService.convertToDto(user));
     }
 }

@@ -14,7 +14,6 @@ public interface UserService {
 
     UserDto getUserById(Long userId);
 
-    UserDto getCurrentUser(String username);
 
     UserDto updateUserById(Long userId, UserDto userDto);
 
@@ -30,4 +29,5 @@ public interface UserService {
 
     Page<Address> getUserAddresses(Long userId, int page, int size);
 
+    User getAuthenticatedUser();
 }

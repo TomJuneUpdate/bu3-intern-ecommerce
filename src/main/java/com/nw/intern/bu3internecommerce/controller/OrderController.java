@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller quản lý các API liên quan đến đơn hàng
  */
 @RestController
-@RequestMapping("api/order")
+@RequestMapping("${api.prefix}")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;

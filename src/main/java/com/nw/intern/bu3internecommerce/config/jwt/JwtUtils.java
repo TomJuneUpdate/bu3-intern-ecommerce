@@ -1,100 +1,83 @@
 package com.nw.intern.bu3internecommerce.config.jwt;
 
-import io.jsonwebtoken.*;
+import com.nw.intern.bu3internecommerce.config.security.ShopUserDetails;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.List;
 
 @Component
 public class JwtUtils {
+    @Value("${auth.token.jwtSecret}")
+    private String jwtSecret;
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    @Value("${auth.token.accessExpirationInMils}")
+    private String expirationTime;
 
-    @Value("${jwt.expiration}")
-    private long EXPIRATION_TIME;
+    @Value("${auth.token.refreshExpirationInMils}")
+    private String refreshExpirationTime;
 
-    /**
-     * Lấy username từ JWT
-     */
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+    public String generateAccessTokenForUser(Authentication authentication) {
+        ShopUserDetails userPrincipal = (ShopUserDetails) authentication.getPrincipal();
 
-    /**
-     * Lấy một claim cụ thể từ token
-     */
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+        List<String> roles = userPrincipal.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority).toList();
 
-    /**
-     * Tạo token chỉ với username
-     */
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
-    /**
-     * Tạo token có thêm thông tin tùy chỉnh
-     */
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // ✅ Sửa lỗi
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .setSubject(userPrincipal.getEmail())
+                .claim("id", userPrincipal.getId())
+                .claim("roles", roles)
+                .setIssuedAt(new Date())
+                .setExpiration(calculateExpirationDate(expirationTime))
+                .signWith(key(), SignatureAlgorithm.HS256).compact();
+    }
+
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(calculateExpirationDate(refreshExpirationTime))
+                .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    /**
-     * Kiểm tra token có hợp lệ không
-     */
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    private Key key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
-    /**
-     * Kiểm tra token hết hạn chưa
-     */
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private Date calculateExpirationDate(String expirationTimeString) {
+        long expirationTime = Long.parseLong(expirationTimeString); // Convert String to long
+        return new Date(System.currentTimeMillis() + expirationTime);
     }
 
-    /**
-     * Lấy thời gian hết hạn của token
-     */
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    /**
-     * Lấy tất cả claims từ JWT
-     */
-    private Claims extractAllClaims(String token) {
+    public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
+                .setSigningKey(key())
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
+                .getBody().getSubject();
     }
 
-    /**
-     * Tạo khóa bảo mật từ SECRET_KEY
-     */
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
+            throw new JwtException(e.getMessage());
+        }
     }
+
 }

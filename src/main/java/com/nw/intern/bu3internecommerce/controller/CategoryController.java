@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/categorys")
+@RequestMapping("${api.prefix}/categories")
 @AllArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
+
     @GetMapping
     public ApiResponse<List<CategoryDto>> getAllCategories() {
         return ApiResponse.ok(categoryService.getAllCategories());

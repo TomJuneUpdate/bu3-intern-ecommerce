@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
-public class Product extends BaseEntity  {
+public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,8 +38,9 @@ public class Product extends BaseEntity  {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> color;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> imageUrls = new ArrayList<String>();
+    @OneToMany(fetch = FetchType.EAGER)
+    private Collection<Image> imageUrls = new HashSet<>();
+
     private int numRating;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> sizes;

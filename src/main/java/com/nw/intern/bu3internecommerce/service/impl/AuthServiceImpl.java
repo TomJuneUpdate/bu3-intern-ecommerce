@@ -7,13 +7,19 @@ import com.nw.intern.bu3internecommerce.entity.cart.Cart;
 import com.nw.intern.bu3internecommerce.entity.user.Role;
 import com.nw.intern.bu3internecommerce.entity.user.User;
 import com.nw.intern.bu3internecommerce.repository.CartRepository;
+import com.nw.intern.bu3internecommerce.repository.RoleRepository;
 import com.nw.intern.bu3internecommerce.repository.UserRepository;
 import com.nw.intern.bu3internecommerce.service.AuthService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,15 +29,18 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
     private final CartRepository cartRepository;
+    private final RoleRepository roleRepository;
 
     @Override
-    public String register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username đã tồn tại!");
         }
         if (userRepository.existsByEmail(request.getUsername())) {
             throw new RuntimeException("Email đã được dùng!");
         }
+        Role userRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new EntityNotFoundException("Role not found!"));
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -40,26 +49,19 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
         user.setDateOfBirth(request.getDateOfBirth());
-        user.setRole(Role.CUSTOMER);
-
+        user.setRoles(List.of(userRole));
+        user.setActive(true);
         userRepository.save(user);
         Cart cart = new Cart();
         cart.setUser(user);
         cartRepository.save(cart);
-        String token = jwtUtils.generateToken(user);
-        return token;
     }
 
     @Override
     public String login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword())
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
-        String token = jwtUtils.generateToken(user);
-        return token;
+        return jwtUtils.generateAccessTokenForUser(authentication);
     }
 }

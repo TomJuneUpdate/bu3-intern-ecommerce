@@ -28,6 +28,12 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail("Invalid JWT token: " + ex.getMessage());
     }
 
+    @ExceptionHandler(AccountNotActive.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Void> handleAccountNotActive(AccountNotActive ex) {
+        return ApiResponse.fail(ex.getMessage());
+    }
+
     @ExceptionHandler(ExpiredJwtException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ApiResponse<Void> handleExpiredJwt(ExpiredJwtException ex) {

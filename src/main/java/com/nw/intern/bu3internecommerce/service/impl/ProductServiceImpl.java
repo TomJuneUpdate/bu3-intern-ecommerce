@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -23,10 +26,10 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public Product getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        return convertToDto(product);
+        return product;
     }
 
     @Override
@@ -71,7 +74,6 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setDiscountPercentage(productDto.getDiscountPercentage());
         existingProduct.setDescription(productDto.getDescription());
         existingProduct.setColor(productDto.getColor());
-        existingProduct.setImageUrls(productDto.getImageUrls());
         existingProduct.setSizes(productDto.getSizes());
         Product updatedProduct = productRepository.save(existingProduct);
         return convertToDto(updatedProduct);
@@ -90,7 +92,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductDto> getAllProducts(int page, int size, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Product> products = productRepository.findAll(pageable);
         return products.map(this::convertToDto);
@@ -111,7 +114,6 @@ public class ProductServiceImpl implements ProductService {
                 .discountPercentage(product.getDiscountPercentage())
                 .description(product.getDescription())
                 .color(product.getColor())
-                .imageUrls(product.getImageUrls())
                 .sizes(product.getSizes())
                 .category(product.getCategory())
                 .build();
