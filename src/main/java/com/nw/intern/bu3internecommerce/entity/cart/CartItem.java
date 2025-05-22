@@ -44,8 +44,8 @@ public class CartItem {
     @Min(0)
     private Integer purchaseQuantity;
     @Min(0)
-    private BigDecimal mrpPrice;
+    private Double mrpPrice;
     @Min(0)
-    private BigDecimal sellingPrice;
+    private Double sellingPrice;
     
 }

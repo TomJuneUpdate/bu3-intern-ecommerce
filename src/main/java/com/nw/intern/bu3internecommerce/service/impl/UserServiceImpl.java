@@ -14,9 +14,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setEmail(userDto.getEmail());
         existingUser.setPhone(userDto.getPhone());
         existingUser.setDateOfBirth(userDto.getDateOfBirth());
-        
+
         // Lưu thông tin đã cập nhật
         User updatedUser = userRepository.save(existingUser);
         return convertToDto(updatedUser);
@@ -76,20 +78,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Address addAddress(Long userId, Address address) {
-        // Tìm người dùng cần thêm địa chỉ
-        User user = userRepository.findById(userId)
+        // Tìm người dùng cần thêm địa chỉ và load addresses
+        User user = userRepository.findByIdWithAddresses(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với ID: " + userId));
+        
+        // Set user cho address
         address.setUser(user);
+        
+        // Thêm address vào collection của user
+        user.getAddresses().add(address);
+        
+        // Lưu user để cập nhật collection
+        userRepository.save(user);
+        
+        // Lưu và trả về address
         return addressRepository.save(address);
     }
 
     @Override
+    @Transactional
     public Address updateAddress(Long userId, Long addressId, Address updatedAddress) {
-        // Tìm địa chỉ cần cập nhật
+        // Tìm địa chỉ cần cập nhật và load user
         Address existingAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy địa chỉ với ID: " + addressId));
-        
+
         // Kiểm tra xem địa chỉ có thuộc về người dùng không
         if (!existingAddress.getUser().getId().equals(userId)) {
             throw new ResourceNotFoundException("Không tìm thấy địa chỉ cho người dùng với ID: " + userId);
@@ -107,16 +121,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteAddress(Long userId, Long addressId) {
-        // Tìm địa chỉ cần xóa
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy địa chỉ với ID: " + addressId));
+        // Tìm người dùng và load addresses
+        User user = userRepository.findByIdWithAddresses(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với ID: " + userId));
         
-        // Kiểm tra xem địa chỉ có thuộc về người dùng không
-        if (!address.getUser().getId().equals(userId)) {
-            throw new ResourceNotFoundException("Không tìm thấy địa chỉ cho người dùng với ID: " + userId);
-        }
+        // Tìm địa chỉ cần xóa
+        Address address = user.getAddresses().stream()
+                .filter(a -> a.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy địa chỉ với ID: " + addressId));
 
+        // Xóa address khỏi collection của user
+        user.getAddresses().remove(address);
+        userRepository.save(user);
+        
+        // Xóa address
         addressRepository.delete(address);
     }
 
@@ -130,16 +151,17 @@ public class UserServiceImpl implements UserService {
 
         int start = page * size;
         int end = Math.min(start + size, addresses.size());
-        
+
         if (start > addresses.size()) {
             return new PageImpl<>(new ArrayList<>(), PageRequest.of(page, size), addresses.size());
         }
-        
+
         return new PageImpl<>(addresses.subList(start, end), PageRequest.of(page, size), addresses.size());
     }
 
     /**
      * Chuyển đổi từ Entity User sang DTO
+     *
      * @param user Entity User cần chuyển đổi
      * @return UserDto đã được chuyển đổi
      */
@@ -150,17 +172,21 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
+                .isActive(user.isActive())
                 .lastName(user.getLastName())
                 .phone(user.getPhone() != null ? user.getPhone() : null)
                 .dateOfBirth(user.getDateOfBirth())
                 .build();
     }
+
     @Override
     public User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("The authenticated user: " +authentication.getName());
-        String email = authentication.getName();
-        return Optional.ofNullable(userRepository.findByEmail(email))
-                .orElseThrow(() -> new EntityNotFoundException("Log in required!"));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+            throw new EntityNotFoundException("Log in required!");
+        }
+        String username = auth.getName();
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 }

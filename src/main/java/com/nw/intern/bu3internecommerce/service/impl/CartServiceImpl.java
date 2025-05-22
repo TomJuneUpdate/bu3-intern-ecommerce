@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,88 +35,153 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public CartDto getCartByUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Cart cart = cartRepository.findByUserUsername(username)
-                .orElseThrow(()
-                        -> new ResourceNotFoundException("Cart not found for user"));
+        Cart cart = cartRepository.findByUserUsernameWithItems(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
         return convertToCartDto(cart);
     }
 
     @Override
+    @Transactional
     public CartDto addToCart(Long userId, AddToCartRequest request) {
-        // Kiểm tra user có tồn tại không trước khi lấy thông tin
+        // Kiểm tra user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        //  Kiểm tra xem sản phẩm có tồn tại không
+        // Kiểm tra sản phẩm
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        // Kiểm tra xem user có giỏ hàng không, nếu không thì tạo mới
-        Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
-            Cart newCart = new Cart();
-            newCart.setUser(user);
-            return cartRepository.save(newCart);
-        });
+        // Validate selling price
+        if (product.getSellingPrice() == null) {
+            throw new IllegalStateException("Product selling price is null for product ID: " + product.getId());
+        }
 
-        // Tìm sản phẩm trong giỏ hàng theo ID, size, color
+        // Validate quantity
+        if (request.getQuantity() <= 0) {
+            throw new IllegalStateException("Quantity must be greater than 0");
+        }
+
+        // Validate stock quantity
+        if (product.getQuantity() < request.getQuantity()) {
+            throw new IllegalStateException("Not enough stock. Available quantity: " + product.getQuantity());
+        }
+
+        // Validate size
+        if (!product.getSizes().contains(request.getSize())) {
+            throw new IllegalStateException("Invalid size. Available sizes: " + product.getSizes());
+        }
+
+        // Validate color
+        if (!product.getColor().contains(request.getColor())) {
+            throw new IllegalStateException("Invalid color. Available colors: " + product.getColor());
+        }
+
+        // Tìm hoặc tạo mới Cart, fetch cartItems ngay trong truy vấn
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setUser(user);
+                    newCart.setCartItems(new HashSet<>());
+                    return cartRepository.save(newCart);
+                });
+
+        // Tìm CartItem theo productId, size, color
         Optional<CartItem> optionalCartItem = cart.getCartItems().stream()
                 .filter(item -> item.getProduct().getId().equals(product.getId()) &&
                         item.getSize().equals(request.getSize()) &&
                         item.getColor().equals(request.getColor()))
                 .findFirst();
 
+        CartItem cartItem;
         if (optionalCartItem.isPresent()) {
-            //  Nếu đã có sản phẩm trong giỏ hàng, tăng số lượng
-            CartItem cartItem = optionalCartItem.get();
-            cartItem.setPurchaseQuantity(request.getQuantity());
-            cartItemRepository.save(cartItem);
+            // Cập nhật số lượng
+            cartItem = optionalCartItem.get();
+            int newQuantity = cartItem.getPurchaseQuantity() + request.getQuantity();
+            
+            // Kiểm tra tổng số lượng sau khi cập nhật
+            if (product.getQuantity() < newQuantity) {
+                throw new IllegalStateException("Not enough stock. Available quantity: " + product.getQuantity() + 
+                    ", Current cart quantity: " + cartItem.getPurchaseQuantity() + 
+                    ", Requested additional quantity: " + request.getQuantity());
+            }
+            
+            cartItem.setPurchaseQuantity(newQuantity);
+            // Giữ nguyên giá tại thời điểm thêm vào giỏ
+            if (cartItem.getSellingPrice() == null) {
+                cartItem.setSellingPrice(product.getSellingPrice());
+                cartItem.setMrpPrice(product.getMrpPrice());
+            }
         } else {
-            // Nếu chưa có, tạo mới sản phẩm trong giỏ hàng
-            CartItem cartItem = new CartItem();
+            // Tạo mới CartItem
+            cartItem = new CartItem();
             cartItem.setCart(cart);
             cartItem.setProduct(product);
             cartItem.setSize(request.getSize());
             cartItem.setColor(request.getColor());
             cartItem.setPurchaseQuantity(request.getQuantity());
-            cartItemRepository.save(cartItem);
+            cartItem.setSellingPrice(product.getSellingPrice());
+            cartItem.setMrpPrice(product.getMrpPrice());
+            cart.getCartItems().add(cartItem);
         }
 
-        // Trả về thông tin giỏ hàng sau khi cập nhật
-        return convertToCartDto(cartRepository.findByUserId(userId).get());
+        // Lưu CartItem và cập nhật Cart
+        cartItemRepository.save(cartItem);
+        updateCartTotal(cart);
+        cartRepository.save(cart);
+
+        // Trả về CartDto
+        return convertToCartDto(cart);
     }
 
     @Override
+    @Transactional
     public CartDto updateCartItem(Long userId, Long cartItemId, int quantity) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
 
-        if (!cartItem.getCart().getUser().getId().equals(userId)) {
+        // Fetch cart with items to avoid lazy loading
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+
+        if (!cart.getId().equals(cartItem.getCart().getId())) {
             throw new IllegalStateException("User does not own this cart item");
         }
 
         if (quantity <= 0) {
-            cartItemRepository.delete(cartItem); // Nếu số lượng <= 0, xóa sản phẩm khỏi giỏ hàng
+            cartItemRepository.delete(cartItem);
+            cart.getCartItems().remove(cartItem);
         } else {
             cartItem.setPurchaseQuantity(quantity);
             cartItemRepository.save(cartItem);
         }
 
-        return convertToCartDto(cartItem.getCart());
+        updateCartTotal(cart);
+        cartRepository.save(cart);
+        return convertToCartDto(cart);
     }
 
     @Override
+    @Transactional
     public void removeCartItem(Long userId, Long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
 
-        if (!cartItem.getCart().getUser().getId().equals(userId)) {
+        // Fetch cart with items to avoid lazy loading
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+
+        if (!cart.getId().equals(cartItem.getCart().getId())) {
             throw new IllegalStateException("User does not own this cart item");
         }
 
         cartItemRepository.delete(cartItem);
+        cart.getCartItems().remove(cartItem);
+        updateCartTotal(cart);
+        cartRepository.save(cart);
     }
 
     @Override
+    @Transactional
     public void clearCart(Long userId) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user: " + userId));
@@ -144,5 +211,21 @@ public class CartServiceImpl implements CartService {
                 .color(cartItem.getColor())
                 .purchaseQuantity(cartItem.getPurchaseQuantity())
                 .build();
+    }
+
+    private void updateCartTotal(Cart cart) {
+        double total = 0.0;
+        for (CartItem item : cart.getCartItems()) {
+            if (item.getSellingPrice() == null) {
+                // If selling price is null, try to get it from the product
+                if (item.getProduct() != null && item.getProduct().getSellingPrice() != null) {
+                    item.setSellingPrice(item.getProduct().getSellingPrice());
+                } else {
+                    throw new IllegalStateException("Selling price is null for cart item ID: " + item.getId());
+                }
+            }
+            total += item.getSellingPrice() * item.getPurchaseQuantity();
+        }
+        cart.setTotalSellingPrice(total);
     }
 }

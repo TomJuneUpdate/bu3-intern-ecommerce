@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username đã tồn tại!");
         }
-        if (userRepository.existsByEmail(request.getUsername())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã được dùng!");
         }
         Role userRole = roleRepository.findByName("ROLE_USER")

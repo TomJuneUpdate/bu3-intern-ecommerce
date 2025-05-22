@@ -9,6 +9,7 @@ import com.nw.intern.bu3internecommerce.entity.order.OrderStatus;
 import com.nw.intern.bu3internecommerce.entity.user.Address;
 import com.nw.intern.bu3internecommerce.entity.user.User;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
+import com.nw.intern.bu3internecommerce.repository.AddressRepository;
 import com.nw.intern.bu3internecommerce.repository.CartRepository;
 import com.nw.intern.bu3internecommerce.repository.OrderRepository;
 import com.nw.intern.bu3internecommerce.repository.ProductRepository;
@@ -34,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     @Transactional
@@ -43,14 +45,16 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
 
         // Kiểm tra giỏ hàng có sản phẩm không
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Giỏ hàng trống"));
 
-        // Tìm địa chỉ từ danh sách của User
-        Address selectedAddress = user.getAddresses().stream()
-                .filter(address -> address.getId().equals(addressId))
-                .findFirst()
+        // Kiểm tra địa chỉ có tồn tại và thuộc về user không
+        Address selectedAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy địa chỉ giao hàng"));
+        
+        if (!selectedAddress.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Địa chỉ không thuộc về người dùng này");
+        }
 
         if (cart.getCartItems().isEmpty()) {
             throw new IllegalStateException("Không thể đặt đơn hàng với giỏ hàng trống");
@@ -86,9 +90,11 @@ public class OrderServiceImpl implements OrderService {
                 .sum();
         order.setTotalPrice(totalPrice);
 
-        // Lưu đơn hàng và xóa giỏ hàng
+        // Lưu đơn hàng và xóa cart items
         order = orderRepository.save(order);
-        cartRepository.delete(cart);
+        cart.getCartItems().clear();
+        cart.setTotalSellingPrice(0.0);
+        cartRepository.save(cart);
 
         return convertToOrderDto(order);
     }

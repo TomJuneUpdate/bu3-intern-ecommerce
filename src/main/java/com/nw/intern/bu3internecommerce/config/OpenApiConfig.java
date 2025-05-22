@@ -39,7 +39,7 @@ public class OpenApiConfig {
                 .description("Backend API demo").license(license);
 
         Server devServer = new Server();
-        devServer.setUrl("http://localhost:8080");
+        devServer.setUrl("http://localhost:1503");
         devServer.setDescription("Development environment");
 
         Server prodServer = new Server();

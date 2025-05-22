@@ -32,16 +32,20 @@ import java.util.List;
 public class WebConfig {
 
     private final ShopUserDetailsService userDetailsService;
-
     private final JwtEntryPoint authEntryPoint;
 
+
     @Value("${api.prefix}")
-    private static String API;
-    /**
-     * API authenticate
-     */
-    private static final List<String> SECURED_URLS =
-            List.of(API + "/order/**", API + "/cart/**", API + "/user/**");
+    private String apiPrefix;
+
+    private List<String> getSecuredUrls() {
+        return List.of(
+                apiPrefix + "/order/**",
+                apiPrefix + "/cart/**",
+                apiPrefix + "/user/**",
+                apiPrefix + "/admin/**"
+        );
+    }
 
     @Bean
     public AuthTokenFilter authTokenFilter() {
@@ -60,7 +64,7 @@ public class WebConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        var authProvider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
@@ -68,16 +72,19 @@ public class WebConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
+                .exceptionHandling(exception -> exception.
+                        authenticationEntryPoint(authEntryPoint)// xử lý 401 Unauthorized
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
-                        .anyRequest().permitAll());
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(getSecuredUrls().toArray(new String[0])).authenticated()
+                        .anyRequest().permitAll()
+                );
+
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
     }
 
     @Bean
@@ -85,13 +92,12 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**") // Apply to all endpoints
-                        .allowedOrigins("http://localhost:3000/", "") // Allow this origin
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow these HTTP methods
-                        .allowedHeaders("*") // Allow all headers
-                        .allowCredentials(true); // Allow credentials
+                registry.addMapping("/api/**")
+                        .allowedOrigins("http://localhost:3000") // Removed trailing slash and empty string
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }
 }
-

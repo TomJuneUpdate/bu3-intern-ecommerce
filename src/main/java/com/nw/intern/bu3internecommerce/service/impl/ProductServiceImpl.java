@@ -3,7 +3,9 @@ package com.nw.intern.bu3internecommerce.service.impl;
 import com.nw.intern.bu3internecommerce.dto.ProductDto;
 import com.nw.intern.bu3internecommerce.dto.request.AddProductRequest;
 import com.nw.intern.bu3internecommerce.entity.Category;
+import com.nw.intern.bu3internecommerce.entity.Image;
 import com.nw.intern.bu3internecommerce.entity.Product;
+import com.nw.intern.bu3internecommerce.entity.Review;
 import com.nw.intern.bu3internecommerce.exception.ResourceNotFoundException;
 import com.nw.intern.bu3internecommerce.repository.CategoryRepository;
 import com.nw.intern.bu3internecommerce.repository.ProductRepository;
@@ -104,6 +106,24 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public ProductDto convertToDto(Product product) {
+        List<String> imageUrls = product.getImageUrls().stream()
+                .map(Image::getDownloadUrl)
+                .toList();
+
+        List<Review> reviews = product.getReviews() != null ? 
+            product.getReviews().stream()
+                .map(review -> {
+                    // Create a new Review object with only the necessary fields
+                    Review reviewDto = new Review();
+                    reviewDto.setId(review.getId());
+                    reviewDto.setReviewText(review.getReviewText());
+                    reviewDto.setRating(review.getRating());
+                    reviewDto.setProductImages(review.getProductImages());
+                    return reviewDto;
+                })
+                .toList() : 
+            List.of();
+
         return ProductDto.builder()
                 .id(product.getId())
                 .code(product.getCode())
@@ -116,6 +136,8 @@ public class ProductServiceImpl implements ProductService {
                 .color(product.getColor())
                 .sizes(product.getSizes())
                 .category(product.getCategory())
+                .imageUrls(imageUrls)
+                .reviews(reviews)
                 .build();
     }
 

@@ -4,6 +4,7 @@ import com.nw.intern.bu3internecommerce.dto.CartDto;
 import com.nw.intern.bu3internecommerce.dto.request.AddToCartRequest;
 import com.nw.intern.bu3internecommerce.dto.response.ApiResponse;
 import com.nw.intern.bu3internecommerce.service.CartService;
+import com.nw.intern.bu3internecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
+    private final UserService userService;
 
     @GetMapping
     public ApiResponse<CartDto> getCartByUser() {
@@ -27,37 +29,38 @@ public class CartController {
         return ApiResponse.ok(cart);
     }
 
-    @PostMapping("/{userId}/add")
+    @PostMapping("/add")
     public ApiResponse<CartDto> addToCart(
-            @PathVariable Long userId,
             @RequestBody AddToCartRequest request
     ) {
+        Long userId = userService.getAuthenticatedUser().getId();
         CartDto updatedCart = cartService.addToCart(userId, request);
         return ApiResponse.ok(updatedCart);
     }
 
-    @PutMapping("/{userId}/update/{cartItemId}")
+    @PutMapping("/update/{cartItemId}")
     public ApiResponse<CartDto> updateCartItem(
-            @PathVariable Long userId,
             @PathVariable Long cartItemId,
             @RequestParam int quantity
     ) {
+        Long userId = userService.getAuthenticatedUser().getId();
         CartDto updatedCart = cartService.updateCartItem(userId, cartItemId, quantity);
         return ApiResponse.ok(updatedCart);
     }
 
 
-    @DeleteMapping("/{userId}/remove/{cartItemId}")
+    @DeleteMapping("/remove/{cartItemId}")
     public ApiResponse<Void> removeCartItem(
-            @PathVariable Long userId,
             @PathVariable Long cartItemId
     ) {
+        Long userId = userService.getAuthenticatedUser().getId();
         cartService.removeCartItem(userId, cartItemId);
         return ApiResponse.ok();
     }
 
-    @DeleteMapping("/{userId}/clear")
-    public ApiResponse<Void> clearCart(@PathVariable Long userId) {
+    @DeleteMapping("/clear")
+    public ApiResponse<Void> clearCart() {
+        Long userId = userService.getAuthenticatedUser().getId();
         cartService.clearCart(userId);
         return ApiResponse.ok();
     }

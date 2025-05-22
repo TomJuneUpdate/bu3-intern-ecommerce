@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,8 @@ import java.util.List;
 public class ImageController {
     private final ImageService imageService;
 
-    @PostMapping("/image/upload")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("admin/image/upload")
     public ApiResponse<List<ImageDto>> uploadImages(
             @RequestParam("files") List<MultipartFile> files,
             @RequestParam("productId") Long productId) {
@@ -49,14 +51,15 @@ public class ImageController {
 
     }
 
-    @PutMapping("/image/{imageId}/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("admin/image/{imageId}/update")
     public ApiResponse<Void> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) {
         imageService.updateImage(file, imageId);
         return ApiResponse.ok();
     }
 
-
-    @DeleteMapping("/image/{imageId}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("admin/image/{imageId}/delete")
     public ApiResponse<Void> deleteImage(@PathVariable Long imageId) {
         imageService.deleteImageById(imageId);
         return ApiResponse.ok();

@@ -1,5 +1,6 @@
 package com.nw.intern.bu3internecommerce.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nw.intern.bu3internecommerce.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +34,7 @@ public class Address extends BaseEntity {
     private String phone;
     private String addressNote;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 }

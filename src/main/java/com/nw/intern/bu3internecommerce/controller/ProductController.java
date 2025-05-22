@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,14 +31,13 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/products")
+@RequestMapping("${api.prefix}")
 @AllArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
-    private final ImageService imageService;
 
-    @GetMapping
+    @GetMapping("/getAllProducts")
     public ApiResponse<Page<ProductDto>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -49,19 +49,22 @@ public class ProductController {
         return ApiResponse.ok(products);
     }
 
-    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/product")
     public ApiResponse<ProductDto> createProduct(@RequestBody AddProductRequest addProductRequest) {
         return ApiResponse.ok(productService.createProduct(addProductRequest));
     }
 
-    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/product/{id}")
     public ApiResponse<ProductDto> updateProduct(
             @PathVariable long id,
             @RequestBody ProductDto productDTO) {
         return ApiResponse.ok(productService.updateProduct(id, productDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/product/{id}")
     public ApiResponse<Void> deleteProduct(
             @PathVariable long id) {
         productService.deleteProduct(id);
